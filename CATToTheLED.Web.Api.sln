@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.421
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CATToTheLED.Web.Api", "CATToTheLED.Web.Api\CATToTheLED.Web.Api.csproj", "{56964BC3-9188-4B8A-B786-0004B4431711}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{56964BC3-9188-4B8A-B786-0004B4431711}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56964BC3-9188-4B8A-B786-0004B4431711}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56964BC3-9188-4B8A-B786-0004B4431711}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56964BC3-9188-4B8A-B786-0004B4431711}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {97B82B8D-2599-423E-B3F6-9B8FD66D9E97}
+	EndGlobalSection
+EndGlobal
