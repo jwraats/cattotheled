@@ -10,34 +10,96 @@ namespace CATToTheLED.Web.Api.Controllers
     [ApiController]
     public class LedController : ControllerBase
     {
-        private readonly Neopixel _neopixel;
-
-        public LedController()
-        {
-            _neopixel = new Neopixel(60, 18);
-        }
-
+        private readonly int _ledCount = 60;
+        private readonly int _pin = 18;
         [HttpGet("color")]
-        public ActionResult<Dictionary<int, Color>> Get()
+        public Dictionary<int, string> GetColors()
         {
-            Dictionary<int, Color> colorIndex = new Dictionary<int, Color>();
+            // You can also choose a custom color order
+            var neopixel = new ws281x.Net.Neopixel(ledCount: _ledCount, pin: _pin);
 
-            for(int i = 0; i <= 60; i++)
-                colorIndex.Add(i, _neopixel.LedList.GetColor(i));
+            // Always initialize the wrapper first
+            neopixel.Begin();
+
+            Dictionary<int, string> colorIndex = new Dictionary<int, string>();
+            for (var i = 0; i < neopixel.GetNumberOfPixels(); i++)
+            {
+                colorIndex.Add(i, $"R:{neopixel.LedList.GetColor(i).G}, G:{neopixel.LedList.GetColor(i).B}, {neopixel.LedList.GetColor(i).R}");
+            }
 
             return colorIndex;
         }
 
-        [HttpGet("led/{ledIndex}/color")]
-        public ActionResult<Color> Get(int ledIndex)
+        [HttpPut("color")]
+        public void SetColors(string colorString)
         {
-            return _neopixel.LedList.GetColor(ledIndex);
+
+            // You can also choose a custom color order
+            var neopixel = new ws281x.Net.Neopixel(ledCount: _ledCount, pin: _pin);
+
+            // Always initialize the wrapper first
+            neopixel.Begin();
+
+            for (var i = 0; i < neopixel.GetNumberOfPixels(); i++)
+            {
+                Color desiredColor = System.Drawing.Color.FromName(colorString);
+                neopixel.SetPixelColor(i, System.Drawing.Color.FromArgb(desiredColor.G, desiredColor.B, desiredColor.R));
+                neopixel.LedList.SetColor(i, System.Drawing.Color.FromArgb(desiredColor.G, desiredColor.B, desiredColor.R));
+            }
+
+            // Apply changes to the led
+            neopixel.Show();
+
         }
 
-        [HttpPut("led/{ledIndex}/setColor")]
-        public void SetColor(int ledIndex, Color color)
+        [HttpGet("ping")]
+        public string GetPing()
         {
-            _neopixel.SetPixelColor(ledIndex, color);
+            return $"Pong {DateTime.Now}";
         }
+
+        [HttpGet("led/{ledIndex}/color")]
+        public string GetColor(int ledIndex)
+        {
+            var neopixel = new ws281x.Net.Neopixel(ledCount: _ledCount, pin: _pin);
+
+            if (!(ledIndex >= 0 && ledIndex < neopixel.GetNumberOfPixels()))
+            {
+                throw new Exception("Led is not existing");
+            }
+
+
+            // Always initialize the wrapper first
+            neopixel.Begin();
+
+            //Get the attribute
+            var color = neopixel.LedList.GetColor(ledIndex).Name;
+
+            return color;
+        }
+
+        [HttpPut("led/{ledIndex}/color")]
+        public void SetColor(int ledIndex, string colorString)
+        {
+
+            // You can also choose a custom color order
+            var neopixel = new ws281x.Net.Neopixel(ledCount: _ledCount, pin: _pin);
+
+
+            if (!(ledIndex >= 0 && ledIndex < neopixel.GetNumberOfPixels()))
+            {
+                throw new Exception("Led is not existing");
+            }
+            // Always initialize the wrapper first
+            neopixel.Begin();
+            Color desiredColor = System.Drawing.Color.FromName(colorString);
+            neopixel.SetPixelColor(ledIndex, System.Drawing.Color.FromArgb(desiredColor.G, desiredColor.B, desiredColor.R));
+            neopixel.LedList.SetColor(ledIndex, System.Drawing.Color.FromArgb(desiredColor.G, desiredColor.B, desiredColor.R));
+
+            // Apply changes to the led
+            neopixel.Show();
+
+        }
+
     }
 }

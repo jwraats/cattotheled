@@ -23,7 +23,7 @@ namespace CATToTheLED.Web.Api
         {
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info {Title = "Platform DeskPro", Version = "v1"});
+                c.SwaggerDoc("v1", new Info {Title = "CATToTheLED", Version = "v1"});
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
@@ -42,7 +42,7 @@ namespace CATToTheLED.Web.Api
 
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Platform DeskPro v1.0");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "CATToTheLED Api Docs");
                 c.RoutePrefix = "docs";
             });
 
