@@ -18,6 +18,7 @@ namespace CATToTheLED.Web.Api.Extensions
     {
         public Dictionary<int, Color> Info { get; set; }
         private Dictionary<int, Color> BeforeShow { get; set; }
+        private int BrightnessBeforeShow { get; set; }
 
         private int _giveShowForMS = 0;
         public int GiveShowForMS {
@@ -40,6 +41,7 @@ namespace CATToTheLED.Web.Api.Extensions
                 {
                     BeforeShow = Info.ToDictionary(entry => entry.Key,
                                                entry => entry.Value);
+                    BrightnessBeforeShow = this.GetBrightness();
                 }
                 this._giveShow = value;
                 if(this._giveShow != Shows.None)
@@ -142,10 +144,12 @@ namespace CATToTheLED.Web.Api.Extensions
                 throw new OperationCanceledException("Show is none :(.. but luckely just finished");
             }
             catch{
+                //Reset everything
                 Info = BeforeShow.ToDictionary(entry => entry.Key,
                                                entry => entry.Value);
-                this.Show();
                 BeforeShow = new Dictionary<int, Color>();
+                this.SetBrightness((byte)BrightnessBeforeShow);
+                this.Show();
             }
         }
 
