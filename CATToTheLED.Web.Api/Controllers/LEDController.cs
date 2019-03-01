@@ -14,7 +14,6 @@ namespace CATToTheLED.Web.Api.Controllers
 
         public LedController(){
             _neopixel = NeoPixelStatic.Neopixel;
-            _neopixel.Begin();
         }
 
         [HttpGet("color")]
@@ -27,6 +26,7 @@ namespace CATToTheLED.Web.Api.Controllers
         //Set the whole matrix the way you want it
         public void SetColorList([FromBody]Dictionary<int, string> coloursDictionary)
         {
+            _neopixel.GiveShow = Shows.None;
             foreach (var colorIndexCombination in coloursDictionary)
             {
                 _neopixel.SetColor(colorIndexCombination.Key, Color.FromName(colorIndexCombination.Value));
@@ -40,6 +40,7 @@ namespace CATToTheLED.Web.Api.Controllers
         [HttpPost("color")]
         public void SetColors(string colorString)
         {
+            _neopixel.GiveShow = Shows.None;
             for (var i = 0; i < _neopixel.GetNumberOfPixels(); i++)
             {
                 _neopixel.SetColor(i, Color.FromName(colorString));
@@ -47,7 +48,13 @@ namespace CATToTheLED.Web.Api.Controllers
 
             // Apply changes to the led
             _neopixel.Show();
+        }
 
+        [HttpPost("show")]
+        public Shows SetShow(string show)
+        {
+            _neopixel.GiveShow = (Shows)Enum.Parse(typeof(Shows), show);
+            return _neopixel.GiveShow;
         }
 
         [HttpGet("ping")]
@@ -73,7 +80,7 @@ namespace CATToTheLED.Web.Api.Controllers
         [HttpPut("led/{ledIndex}/color")]
         public void SetColor(int ledIndex, string colorString)
         {
-        
+            _neopixel.GiveShow = Shows.None;
             if (!(ledIndex >= 0 && ledIndex < _neopixel.GetNumberOfPixels()))
             {
                 throw new Exception("Led is not existing");

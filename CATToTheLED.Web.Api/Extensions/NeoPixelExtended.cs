@@ -7,18 +7,41 @@ using ws281x.Net;
 
 namespace CATToTheLED.Web.Api.Extensions
 {
+    public enum Shows {
+        None = 0,
+        Rainbow = 1,
+        ColorSwipe = 2
+    }
 
     public class NeoPixelExtended : Neopixel
     {
         public Dictionary<int, Color> Info { get; set; }
 
+        private Shows _giveShow = Shows.None;
+        public Shows GiveShow
+        {
+            get{
+                return this._giveShow;
+            }
+            set{
+                this._giveShow = value;
+                Task.Run(() => this.DoWorkAsync());
+            } 
+        }
+
+
         public NeoPixelExtended(int ledCount, int pin) : base(ledCount: ledCount, pin: pin)
         {
+            //Otherwise the whole world crash
+            this.Begin();
+
+            //Set list to Black
             Info = new Dictionary<int, Color>();
             for (int i = 0; i < this.GetNumberOfPixels(); i++){
                 Info.Add(i, Color.Black);
             }
-            //Reset everything to black
+
+            //Show it
             this.Show();
         }
 
@@ -32,6 +55,14 @@ namespace CATToTheLED.Web.Api.Extensions
                 Info[i] = color;
             }
             return color;
+        }
+
+        private bool SetColorShow(int i, Color color){
+            if(this.GiveShow != Shows.None){
+                this.SetColor(i, color);
+                return true;
+            }
+            return false;
         }
 
         public Color GetColor(int i)
@@ -49,6 +80,57 @@ namespace CATToTheLED.Web.Api.Extensions
                 }
             }
             base.Show();
+        }
+
+        private async Task DoWorkAsync(){
+            while(GiveShow != Shows.None)
+            {
+                switch (GiveShow){
+                    case Shows.ColorSwipe:
+                        await this.ColorSwipe();
+                        break;
+                    case Shows.Rainbow:
+                        await this.Rainbow();
+                        break;
+                    default:
+                        return;
+                }
+            }
+        }
+
+        private async Task ColorSwipe(){
+            for (int i = 0; i < this.GetNumberOfPixels(); i++)
+            {
+                if (!this.SetColorShow(i, Color.Red))
+                    return;
+                this.Show();
+            }
+            await Task.Delay(1000);
+            for (int i = 0; i < this.GetNumberOfPixels(); i++)
+            {
+                if (!this.SetColorShow(i, Color.Blue))
+                    return;
+                this.Show();
+            }
+            await Task.Delay(1000);
+        }
+
+        private async Task Rainbow()
+        {
+            for (int i = 0; i < this.GetNumberOfPixels(); i++)
+            {
+                if (!this.SetColorShow(i, Color.Purple))
+                    return;
+            }
+            this.Show();
+            await Task.Delay(1000);
+            for (int i = 0; i < this.GetNumberOfPixels(); i++)
+            {
+                if (!this.SetColorShow(i, Color.Green))
+                    return;
+            }
+            this.Show();
+            await Task.Delay(1000);
         }
     }
 
