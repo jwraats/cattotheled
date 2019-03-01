@@ -23,6 +23,20 @@ namespace CATToTheLED.Web.Api.Controllers
             return _neopixel.Info;
         }
 
+        [HttpPost("color")]
+        //Set the whole matrix the way you want it
+        public void SetColors(Dictionary<int, string> coloursDictionary)
+        {
+            foreach (var colorIndexCombination in coloursDictionary)
+            {
+                _neopixel.SetColor(colorIndexCombination.Key, Color.FromName(colorIndexCombination.Value));
+            }
+
+            // Apply changes to the led
+            _neopixel.Show();
+
+        }
+
         [HttpPut("color")]
         public void SetColors(string colorString)
         {
