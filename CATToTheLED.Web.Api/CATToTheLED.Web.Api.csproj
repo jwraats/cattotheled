@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\" />
+    <Folder Include="Extensions\Shows\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -19,4 +20,7 @@
     <PackageReference Include="ws281x.Net" Version="1.0.4" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Extensions\Shows\TheTheater.General.cs" />
+  </ItemGroup>
 </Project>

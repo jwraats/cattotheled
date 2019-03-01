@@ -7,18 +7,12 @@ using ws281x.Net;
 
 namespace CATToTheLED.Web.Api.Extensions
 {
-    public enum Shows {
-        None = 0,
-        Rainbow = 1,
-        ColorSwipe = 2,
-        Alarm = 3
-    }
-
     public class NeoPixelExtended : Neopixel
     {
         public Dictionary<int, Color> Info { get; set; }
         private Dictionary<int, Color> BeforeShow { get; set; }
         private int BrightnessBeforeShow { get; set; }
+        private TheTheater _theater { get; set; }
 
         private int _giveShowForMS = 0;
         public int GiveShowForMS {
@@ -57,6 +51,8 @@ namespace CATToTheLED.Web.Api.Extensions
             //Otherwise the whole world crash
             this.Begin();
 
+            _theater = new TheTheater(this.GetNumberOfPixels());
+
             //Set list to Black
             Info = new Dictionary<int, Color>();
             for (int i = 0; i < this.GetNumberOfPixels(); i++){
@@ -79,21 +75,7 @@ namespace CATToTheLED.Web.Api.Extensions
             return color;
         }
 
-        private void SetColorShow(int i, Color color){
-            if(this.GiveShow == Shows.None){
-                throw new OperationCanceledException("Show is canceled :(");
-            }
-            this.SetColor(i, color);
-        }
 
-        private void SetBrightnessShow(int brightness){
-            if (this.GiveShow == Shows.None)
-            {
-                throw new OperationCanceledException("Show is canceled :(");
-            }
-            if (brightness > 0 && brightness <= 255)
-                this.SetBrightness((byte)brightness);
-        }
 
         public Color GetColor(int i)
         {
@@ -129,13 +111,13 @@ namespace CATToTheLED.Web.Api.Extensions
                     switch (GiveShow)
                     {
                         case Shows.ColorSwipe:
-                            await this.ColorSwipe();
+                            await _theater.ColorSwipe();
                             break;
                         case Shows.Rainbow:
-                            await this.Rainbow();
+                            await _theater.Rainbow();
                             break;
                         case Shows.Alarm:
-                            await this.Alarm();
+                            await _theater.Alarm();
                             break;
                         default:
                             return;
@@ -151,58 +133,6 @@ namespace CATToTheLED.Web.Api.Extensions
                 this.SetBrightness((byte)BrightnessBeforeShow);
                 this.Show();
             }
-        }
-
-        private async Task Alarm(){
-            int brightnessNumber = this.GetBrightness();
-            brightnessNumber = (int)Math.Floor((double)(brightnessNumber / 5)) * 5;
-
-            //Color up
-            for (int brightness = brightnessNumber; brightness <= 255; brightness+= 5){
-                this.SetBrightnessShow(brightness);
-                this.Show();
-                await Task.Delay(50);
-            }
-
-            //Color down
-            for (int brightness = 255; brightness >= 0; brightness-=5)
-            {
-                this.SetBrightnessShow(brightness);
-                this.Show();
-                await Task.Delay(50);
-            }
-
-        }
-
-        private async Task ColorSwipe(){
-            for (int i = 0; i < this.GetNumberOfPixels(); i++)
-            {
-                this.SetColorShow(i, Color.Red);
-                this.Show();
-            }
-            await Task.Delay(1000);
-            for (int i = 0; i < this.GetNumberOfPixels(); i++)
-            {
-                this.SetColorShow(i, Color.Blue);
-                this.Show();
-            }
-            await Task.Delay(1000);
-        }
-
-        private async Task Rainbow()
-        {
-            for (int i = 0; i < this.GetNumberOfPixels(); i++)
-            {
-                this.SetColorShow(i, Color.Purple);
-            }
-            this.Show();
-            await Task.Delay(1000);
-            for (int i = 0; i < this.GetNumberOfPixels(); i++)
-            {
-                this.SetColorShow(i, Color.Green);
-            }
-            this.Show();
-            await Task.Delay(1000);
         }
     }
 
