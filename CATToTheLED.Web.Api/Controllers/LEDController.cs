@@ -23,9 +23,9 @@ namespace CATToTheLED.Web.Api.Controllers
             return _neopixel.Info;
         }
 
-        [HttpPost("color")]
+        [HttpPost("color/list")]
         //Set the whole matrix the way you want it
-        public void SetColors(Dictionary<int, string> coloursDictionary)
+        public void SetColorList([FromBody]Dictionary<int, string> coloursDictionary)
         {
             foreach (var colorIndexCombination in coloursDictionary)
             {
@@ -37,7 +37,7 @@ namespace CATToTheLED.Web.Api.Controllers
 
         }
 
-        [HttpPut("color")]
+        [HttpPost("color")]
         public void SetColors(string colorString)
         {
             for (var i = 0; i < _neopixel.GetNumberOfPixels(); i++)

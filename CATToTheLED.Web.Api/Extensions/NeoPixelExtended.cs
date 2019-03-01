@@ -15,10 +15,18 @@ namespace CATToTheLED.Web.Api.Extensions
         public NeoPixelExtended(int ledCount, int pin) : base(ledCount: ledCount, pin: pin)
         {
             Info = new Dictionary<int, Color>();
+            for (int i = 0; i < this.GetNumberOfPixels(); i++){
+                Info.Add(i, Color.Black);
+            }
+            //Reset everything to black
+            this.Show();
         }
 
         public Color SetColor(int i, Color color)
         {
+            if(i < 0 && i > this.GetNumberOfPixels()){
+                throw new Exception("Only the pixels that we have..");
+            }
             if (!Info.TryAdd(i, color))
             {
                 Info[i] = color;
