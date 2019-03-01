@@ -38,21 +38,27 @@ namespace CATToTheLED.Web.Api.Controllers
         }
 
         [HttpPost("color")]
-        public void SetColors(string colorString)
+        public void SetColors(string colorString, byte brightness = 255)
         {
             _neopixel.GiveShow = Shows.None;
             for (var i = 0; i < _neopixel.GetNumberOfPixels(); i++)
             {
                 _neopixel.SetColor(i, Color.FromName(colorString));
             }
-
+            if(brightness >= 0 && brightness <= 255)
+            {
+                _neopixel.SetBrightness(brightness);
+            }
             // Apply changes to the led
             _neopixel.Show();
         }
 
         [HttpPost("show")]
-        public Shows SetShow(string show)
+        public Shows SetShow(string show, int time)
         {
+            if (time < 0)
+                throw new Exception("We can't time travel!");
+            _neopixel.GiveShowForMS = time;
             _neopixel.GiveShow = (Shows)Enum.Parse(typeof(Shows), show);
             return _neopixel.GiveShow;
         }

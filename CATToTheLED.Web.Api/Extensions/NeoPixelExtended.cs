@@ -10,13 +10,25 @@ namespace CATToTheLED.Web.Api.Extensions
     public enum Shows {
         None = 0,
         Rainbow = 1,
-        ColorSwipe = 2
+        ColorSwipe = 2,
+        Alarm = 3
     }
 
     public class NeoPixelExtended : Neopixel
     {
         public Dictionary<int, Color> Info { get; set; }
+        private Dictionary<int, Color> BeforeShow { get; set; }
 
+        private int _giveShowForMS = 0;
+        public int GiveShowForMS {
+            get{
+                return this._giveShowForMS;
+            }
+            set{
+                this._giveShowForMS = value;
+                Task.Run(() => this.TimeShowAsync());
+            }
+        }
         private Shows _giveShow = Shows.None;
         public Shows GiveShow
         {
@@ -24,8 +36,16 @@ namespace CATToTheLED.Web.Api.Extensions
                 return this._giveShow;
             }
             set{
+                if(this._giveShow == Shows.None && value != Shows.None)
+                {
+                    BeforeShow = Info.ToDictionary(entry => entry.Key,
+                                               entry => entry.Value);
+                }
                 this._giveShow = value;
-                Task.Run(() => this.DoWorkAsync());
+                if(this._giveShow != Shows.None)
+                {
+                    Task.Run(() => this.DoWorkAsync());
+                }
             } 
         }
 
@@ -57,12 +77,20 @@ namespace CATToTheLED.Web.Api.Extensions
             return color;
         }
 
-        private bool SetColorShow(int i, Color color){
-            if(this.GiveShow != Shows.None){
-                this.SetColor(i, color);
-                return true;
+        private void SetColorShow(int i, Color color){
+            if(this.GiveShow == Shows.None){
+                throw new OperationCanceledException("Show is canceled :(");
             }
-            return false;
+            this.SetColor(i, color);
+        }
+
+        private void SetBrightnessShow(int brightness){
+            if (this.GiveShow == Shows.None)
+            {
+                throw new OperationCanceledException("Show is canceled :(");
+            }
+            if (brightness > 0 && brightness <= 255)
+                this.SetBrightness((byte)brightness);
         }
 
         public Color GetColor(int i)
@@ -82,34 +110,76 @@ namespace CATToTheLED.Web.Api.Extensions
             base.Show();
         }
 
-        private async Task DoWorkAsync(){
-            while(GiveShow != Shows.None)
-            {
-                switch (GiveShow){
-                    case Shows.ColorSwipe:
-                        await this.ColorSwipe();
-                        break;
-                    case Shows.Rainbow:
-                        await this.Rainbow();
-                        break;
-                    default:
-                        return;
+        private async Task TimeShowAsync(){
+            if (GiveShowForMS == 0) // 0 = forever
+                return;
+
+            await Task.Delay(GiveShowForMS);
+            GiveShow = Shows.None;
+            return;
+        }
+
+        private async Task DoWorkAsync()
+        {
+            try { 
+                while (GiveShow != Shows.None)
+                {
+                    switch (GiveShow)
+                    {
+                        case Shows.ColorSwipe:
+                            await this.ColorSwipe();
+                            break;
+                        case Shows.Rainbow:
+                            await this.Rainbow();
+                            break;
+                        case Shows.Alarm:
+                            await this.Alarm();
+                            break;
+                        default:
+                            return;
+                    }
                 }
+                throw new OperationCanceledException("Show is none :(.. but luckely just finished");
             }
+            catch{
+                Info = BeforeShow.ToDictionary(entry => entry.Key,
+                                               entry => entry.Value);
+                this.Show();
+                BeforeShow = new Dictionary<int, Color>();
+            }
+        }
+
+        private async Task Alarm(){
+            int brightnessNumber = this.GetBrightness();
+            brightnessNumber = (int)Math.Floor((double)(brightnessNumber / 5)) * 5;
+
+            //Color up
+            for (int brightness = brightnessNumber; brightness <= 255; brightness+= 5){
+                this.SetBrightnessShow(brightness);
+                this.Show();
+                await Task.Delay(50);
+            }
+
+            //Color down
+            for (int brightness = 255; brightness >= 0; brightness-=5)
+            {
+                this.SetBrightnessShow(brightness);
+                this.Show();
+                await Task.Delay(50);
+            }
+
         }
 
         private async Task ColorSwipe(){
             for (int i = 0; i < this.GetNumberOfPixels(); i++)
             {
-                if (!this.SetColorShow(i, Color.Red))
-                    return;
+                this.SetColorShow(i, Color.Red);
                 this.Show();
             }
             await Task.Delay(1000);
             for (int i = 0; i < this.GetNumberOfPixels(); i++)
             {
-                if (!this.SetColorShow(i, Color.Blue))
-                    return;
+                this.SetColorShow(i, Color.Blue);
                 this.Show();
             }
             await Task.Delay(1000);
@@ -119,15 +189,13 @@ namespace CATToTheLED.Web.Api.Extensions
         {
             for (int i = 0; i < this.GetNumberOfPixels(); i++)
             {
-                if (!this.SetColorShow(i, Color.Purple))
-                    return;
+                this.SetColorShow(i, Color.Purple);
             }
             this.Show();
             await Task.Delay(1000);
             for (int i = 0; i < this.GetNumberOfPixels(); i++)
             {
-                if (!this.SetColorShow(i, Color.Green))
-                    return;
+                this.SetColorShow(i, Color.Green);
             }
             this.Show();
             await Task.Delay(1000);
