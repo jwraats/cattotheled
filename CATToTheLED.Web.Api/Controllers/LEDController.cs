@@ -37,6 +37,17 @@ namespace CATToTheLED.Web.Api.Controllers
 
         }
 
+        [HttpPost("brightness")]
+        public void SetBrightness(byte brightness)
+        {
+            if (brightness >= 0 && brightness <= 255)
+            {
+                _neopixel.SetBrightness(brightness);
+            }
+            // Apply changes to the led
+            _neopixel.Show();
+        }
+
         [HttpPost("color")]
         public void SetColors(string colorString, byte brightness = 255)
         {
