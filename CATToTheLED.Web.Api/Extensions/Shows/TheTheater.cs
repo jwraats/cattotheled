@@ -1,9 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Threading.Tasks;
-using ws281x.Net;
 
 namespace CATToTheLED.Web.Api.Extensions
 {
@@ -12,7 +8,8 @@ namespace CATToTheLED.Web.Api.Extensions
         None = 0,
         Rainbow = 1,
         ColorSwipe = 2,
-        Alarm = 3
+        Alarm = 3,
+        ShowColors = 4
     }
 
     public sealed partial class TheTheater

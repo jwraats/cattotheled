@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using ws281x.Net;
 
 namespace CATToTheLED.Web.Api.Extensions
@@ -33,7 +34,7 @@ namespace CATToTheLED.Web.Api.Extensions
 
         public async Task ColorSwipe()
         {
-            this.SetBrightnessShow(255);
+            this.SetBrightnessShow(10);
             for (int i = 0; i < this.numberOfPixels; i++)
             {
                 this.SetColorShow(i, Color.Red);
@@ -64,5 +65,20 @@ namespace CATToTheLED.Web.Api.Extensions
             NeoPixelStatic.Neopixel.Show();
             await Task.Delay(1000);
         }
+
+        public async Task ShowColors(){
+            foreach (KnownColor knowColor in Enum.GetValues(typeof(KnownColor)))
+            {
+                Color color = Color.FromKnownColor(knowColor);
+                for (int i = 0; i < this.numberOfPixels; i++)
+                {
+                    this.SetColorShow(i, color);
+                }
+                NeoPixelStatic.Neopixel.Show();
+                NeoPixelStatic.Logger.LogInformation($"Color shown is: {knowColor}.");
+                await Task.Delay(5000);
+            }
+        }
+
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using ws281x.Net;
 
 namespace CATToTheLED.Web.Api.Extensions
@@ -119,6 +120,9 @@ namespace CATToTheLED.Web.Api.Extensions
                         case Shows.Alarm:
                             await _theater.Alarm();
                             break;
+                        case Shows.ShowColors:
+                            await _theater.ShowColors();
+                            break;
                         default:
                             return;
                     }
@@ -139,12 +143,16 @@ namespace CATToTheLED.Web.Api.Extensions
     public static class NeoPixelStatic
     {
         public static NeoPixelExtended Neopixel { get; }
-
+        public static ILogger Logger { get; }
         static NeoPixelStatic()
         {
             int _ledCount = 60;
             int _pin = 18;
             Neopixel = new NeoPixelExtended(_ledCount, _pin);
+
+            //Logging
+            ILoggerFactory loggerFactory = new LoggerFactory().AddConsole().AddDebug();
+            Logger = loggerFactory.CreateLogger<Program>();
         }
     }
 }
