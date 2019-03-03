@@ -69,6 +69,10 @@ namespace CATToTheLED.Web.Api.Controllers
         {
             if (time < 0)
                 throw new Exception("We can't time travel!");
+
+            //First cancel the show 
+            _neopixel.GiveShow = Shows.None;
+            //Prepare new show
             _neopixel.GiveShowForMS = time;
             _neopixel.GiveShow = (Shows)Enum.Parse(typeof(Shows), show);
             return _neopixel.GiveShow;

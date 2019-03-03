@@ -9,7 +9,8 @@ namespace CATToTheLED.Web.Api.Extensions
         Rainbow = 1,
         ColorSwipe = 2,
         Alarm = 3,
-        ShowColors = 4
+        ShowColors = 4,
+        Snake = 5
     }
 
     public sealed partial class TheTheater

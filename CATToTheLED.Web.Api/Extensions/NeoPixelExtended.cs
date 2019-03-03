@@ -123,6 +123,9 @@ namespace CATToTheLED.Web.Api.Extensions
                         case Shows.ShowColors:
                             await _theater.ShowColors();
                             break;
+                        case Shows.Snake:
+                            await _theater.Snake();
+                            break;
                         default:
                             return;
                     }

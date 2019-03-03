@@ -32,53 +32,5 @@ namespace CATToTheLED.Web.Api.Extensions
             }
         }
 
-        public async Task ColorSwipe()
-        {
-            this.SetBrightnessShow(10);
-            for (int i = 0; i < this.numberOfPixels; i++)
-            {
-                this.SetColorShow(i, Color.Red);
-                NeoPixelStatic.Neopixel.Show();
-            }
-            await Task.Delay(1000);
-            for (int i = 0; i < this.numberOfPixels; i++)
-            {
-                this.SetColorShow(i, Color.Blue);
-                NeoPixelStatic.Neopixel.Show();
-            }
-            await Task.Delay(1000);
-        }
-
-        public async Task Rainbow()
-        {
-            this.SetBrightnessShow(255);
-            for (int i = 0; i < this.numberOfPixels; i++)
-            {
-                this.SetColorShow(i, Color.Purple);
-            }
-            NeoPixelStatic.Neopixel.Show();
-            await Task.Delay(1000);
-            for (int i = 0; i < this.numberOfPixels; i++)
-            {
-                this.SetColorShow(i, Color.Green);
-            }
-            NeoPixelStatic.Neopixel.Show();
-            await Task.Delay(1000);
-        }
-
-        public async Task ShowColors(){
-            foreach (KnownColor knowColor in Enum.GetValues(typeof(KnownColor)))
-            {
-                Color color = Color.FromKnownColor(knowColor);
-                for (int i = 0; i < this.numberOfPixels; i++)
-                {
-                    this.SetColorShow(i, color);
-                }
-                NeoPixelStatic.Neopixel.Show();
-                NeoPixelStatic.Logger.LogInformation($"Color shown is: {knowColor}.");
-                await Task.Delay(5000);
-            }
-        }
-
     }
 }
