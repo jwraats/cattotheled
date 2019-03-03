@@ -36,11 +36,11 @@ namespace CATToTheLED.Web.Api.Extensions
                     await Task.Delay(50);
 
                     NeoPixelStatic.Neopixel.Info.Clear();
-                    colorOffset++;
-                    if (colorOffset < int.MaxValue)
+                    if (colorOffset == int.MaxValue)
                     {
                         colorOffset = 0;
                     }
+                    colorOffset++;
                 }
             }
         }
@@ -73,13 +73,14 @@ namespace CATToTheLED.Web.Api.Extensions
                     var colorIndex = (i + colorOffset) % rainbowColors.Count;
                     this.SetColorShow(i, rainbowColors[colorIndex]);
                 }
-                colorOffset++;
+
 
                 NeoPixelStatic.Neopixel.Show();
-                if (colorOffset < int.MaxValue)
+                if (colorOffset == int.MaxValue)
                 {
                     colorOffset = 0;
                 }
+                colorOffset++;
 
                 await Task.Delay(50);
             }
